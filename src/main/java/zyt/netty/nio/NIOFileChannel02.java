@@ -19,7 +19,7 @@ public class NIOFileChannel02 {
         File file = new File("d:\\file01.txt");
         FileInputStream fileInputStream = new FileInputStream(file);
 
-        //通过fileInputStreamm 获取对应的FileChannel ->实际类型是这个抽象类的实现
+        //通过fileInputStream 获取对应的FileChannel ->实际类型是这个抽象类的实现
         FileChannel fileChannel = fileInputStream.getChannel();
 
         //创建缓冲区
