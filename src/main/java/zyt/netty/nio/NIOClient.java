@@ -22,7 +22,7 @@ public class NIOClient {
         }
         //如果连接成功，就发送数据
         String str = "hello,你会成功的曾~";
-        //wraps
+        //wraps 就是根据传入的byte数组大小创建相应大小的buffer
         ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
         socketChannel.write(buffer);
         //停住

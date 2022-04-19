@@ -19,7 +19,7 @@ public class MappedByteBufferTest {
          * 参数1：FileChannel.MapMode.READ_WRITE 使用的读写模式 应该也是可以设置只读
          * 参数2：可以直接修改的起始为止
          * 参数3：5:是映射到内存的大小（不是索引为止），
-         * 可以直接修改的范围按照这个 就是0 1 2 3 4
+         * 可以直接修改的范围按照这个 就是 0 1 2 3 4  这里写的5的意思是映射多少个字节上去
          * MappedByteBuffer是抽象类  实际类型是DirectByteBuffer
          */
         MappedByteBuffer mappedByteBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, 5);

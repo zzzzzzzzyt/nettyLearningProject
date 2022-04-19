@@ -21,6 +21,8 @@ public class NIOServer {
         Selector selector = Selector.open();
 
         //绑定一个端口6666，在服务器端监听
+        //serverSocketChannel.socket().bind(new InetSocketAddress(6666)); 道理都是一样的 一个是通过获取它本身的socket建立连接
+        //serverSocketChannel.bind(new InetSocketAddress(6666)); 另一个是通过channel直接连接
         serverSocketChannel.socket().bind(new InetSocketAddress(6666));
         //设置为非阻塞
         serverSocketChannel.configureBlocking(false);
