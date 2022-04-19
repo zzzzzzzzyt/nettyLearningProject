@@ -105,8 +105,6 @@ public class GroupChatServer {
                 //向其他客户端转发消息 专门写一个方法 我的想法是遍历所有的key 然后除了本身的key
                 sendInfoToOtherClients(msg,channel);
             }
-
-
         }catch (IOException e)
         {
             try {

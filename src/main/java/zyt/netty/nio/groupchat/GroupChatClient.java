@@ -106,7 +106,5 @@ public class GroupChatClient {
         {
             chatClient.sendInfo(scanner.nextLine());
         }
-
-
     }
 }

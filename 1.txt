@@ -1,4 +1,3 @@
-hello,美团
 hello,华为
 hello,字节
 一定要上岸啊 两位
