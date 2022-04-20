@@ -2,9 +2,13 @@ package zyt.netty.netty.simple;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPipeline;
 import io.netty.util.CharsetUtil;
+
+import java.util.concurrent.TimeUnit;
 
 /*
     说明
@@ -21,7 +25,65 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println(Thread.currentThread().getName());
         System.out.println("server ctx="+ctx);
+        System.out.println("看看channel和pipeline的关系");
+        Channel channel = ctx.channel();
+        ChannelPipeline pipeline = ctx.pipeline(); //本质是一个双向链表，出栈入栈
+
+
+
+
+        //Thread.sleep(10*1000);  如果是这样直接处理的话 会阻塞十秒
+        //ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~o(=•ェ•=)m",CharsetUtil.UTF_8));
+
+        /*
+            比如这里我们有一个非常耗时长的业务-> 异步执行 -> 提交该channel 到对应的NIOEventLoop的taskQueue中
+         */
+
+        //解决方案1 用户程序自定义普通任务 异步返回
+        ctx.channel().eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10*1000);
+                    ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~o(=•ェ•=)m1",CharsetUtil.UTF_8));
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        ctx.channel().eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(20*1000);
+                    ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~o(=•ェ•=)m2",CharsetUtil.UTF_8));
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //用户自定义定时任务 -> 该任务是提交到 scheduleTaskQueue中
+        ctx.channel().eventLoop().schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10*1000);
+                    ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~o(=•ェ•=)m3",CharsetUtil.UTF_8));
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        },5, TimeUnit.SECONDS);
+
+        System.out.println("go on");
+
         //将msg转换为ByteBuf   ByteBuf是netty提供的 不是NIO的ByteBuffer
         ByteBuf buf = (ByteBuf) msg;
         System.out.println("客户端发送消息是："+ buf.toString(CharsetUtil.UTF_8));

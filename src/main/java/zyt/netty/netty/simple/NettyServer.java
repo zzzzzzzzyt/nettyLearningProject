@@ -1,10 +1,7 @@
 package zyt.netty.netty.simple;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -15,7 +12,7 @@ public class NettyServer {
         //前者只处理连接请求  后者处理真正的业务请求
         //两个都是无限循环
         // bossGroup、workerGroup 含有子线程(NIOEventLoop)的个数 默认是cpu*2
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
@@ -31,6 +28,8 @@ public class NettyServer {
                         //给pipeline设置处理器
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            //每个用户来都会注册一个channel
+                            System.out.println("客户socketChannel hashcode="+ch.hashCode());
                             ch.pipeline().addLast(new NettyServerHandler());
                         }
                     });//给我们的workerGroup 的eventLoop 对应的管道设置处理器
@@ -40,6 +39,20 @@ public class NettyServer {
             //绑定一个端口并且同步，生成一个channelFuture对象
             //启动服务器绑定端口
             ChannelFuture cf = bootstrap.bind(6668).sync();
+
+            //给cf注册监听器
+            cf.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        System.out.println("监听端口 6668成功");
+                    }
+                    else
+                    {
+                        System.out.println("监听端口 6668失败");
+                    }
+                }
+            });
 
             //对关闭通道进行监听
             cf.channel().closeFuture().sync();
