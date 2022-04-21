@@ -1,0 +1,33 @@
+syntax = "proto3";
+option optimize_for = SPEED;//加快解析
+option java_package="zyt.netty.netty.codec2";//指定生成到哪个包下
+option java_outer_classname="MyDataInfo";//外部类名
+
+//protobuf 可以使用message 管理其他的message
+
+message MyMessage{
+    //定义一个枚举类型
+  enum DataType {
+    studentType = 0; //在proto3要求enum的编号从0开始
+    workerType =1;
+  }
+
+  //用datatype标识传的是哪一个枚举变量
+  DataType data_type = 1;
+
+  //表示每次枚举类型只能出现其中的一个
+  oneof dataBody{
+    Student student = 2;
+    Worker worker = 3;
+  }
+}
+
+message Student{
+  int32 id = 1;
+  string name = 2;
+}
+
+message Worker{
+  string name = 1;
+  int32 age = 2;
+}
