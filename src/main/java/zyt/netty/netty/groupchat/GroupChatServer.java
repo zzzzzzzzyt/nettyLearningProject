@@ -17,6 +17,7 @@ public class GroupChatServer {
     public GroupChatServer(int port) {
         this.port = port;
     }
+
     public void run() throws Exception
     {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
